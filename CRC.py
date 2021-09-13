@@ -13,19 +13,12 @@ def getCRCRemainder(message, crc):
     remainder = 0
 
     for i in range(int(crc["bits"]/8)):
-        print("wtf")
         remainder = remainder << 8
         remainder += ord(message[byte_index])
         byte_index += 1
 
-    print("First remainder:", remainder)
-
     no_more_bits = False
-    count = 0
     while not no_more_bits:
-        print()
-        print("ITERATION:", count)
-        count += 1
 
         while not remainder & sig_bit:
             # If another bit
