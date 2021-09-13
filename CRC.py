@@ -32,21 +32,17 @@ def getCRCRemainder(message, crc):
             # Get the bit, and add it
             bit = 1 if (ord(message[byte_index]) & (1 << (8 - bit_index - 1))) > 0 else 0
             remainder += bit
-            print("bit:", bit)
 
             # Update
             bit_index += 1
             byte_index += int(bit_index / 8)
             bit_index = bit_index % 8
-            print("index:", byte_index, bit_index)
 
         if no_more_bits:
             break
 
         # XOR
-        print("Before XOR:", remainder)
         remainder = remainder ^ crc["poly"]
-        print("After XOR:", remainder)
 
     return remainder
 
@@ -54,8 +50,19 @@ def getCRCRemainder(message, crc):
 if __name__ == "__main__":
     # our message
     data = "dogs!\0\0\0\0"
+    crc_index = 0
     print("Message:", data)
-    print("Remainder:", getCRCRemainder(data, CRCs[2]))
+    remainder = getCRCRemainder(data, CRCs[crc_index])
+    print("Remainder:", remainder)
 
     # add CRC to the packet
+    crc_bytes = int(CRCs[crc_index]["bits"]/8)
+    the_bytes = int.to_bytes(remainder, crc_bytes, 'big')
+    data_list = list(data)
+    for i in range(crc_bytes):
+        data_list[len(data) - crc_bytes + i] = chr(the_bytes[i])
+    data = "".join(data_list)
+    print("With CRC on:", data)
+
+    print("New remainder:", getCRCRemainder(data, CRCs[crc_index]))
 
